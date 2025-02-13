@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS missions;
+DROP TABLE IF EXISTS spy_cats;
+DROP TABLE IF EXISTS targets;
