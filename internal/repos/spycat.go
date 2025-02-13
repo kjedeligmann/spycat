@@ -47,14 +47,34 @@ func (r *SpyCatRepo) Read(ctx context.Context, id int) (*models.SpyCat, error) {
 	return &cat, nil
 }
 
-// Update modifies an existing SpyCat
-func (r *SpyCatRepo) Update(ctx context.Context, cat *models.SpyCat) error {
+// List retrieves all SpyCat records from the database.
+func (r *SpyCatRepo) List(ctx context.Context) ([]models.SpyCat, error) {
+	query := `SELECT id, name, years_experience, breed, salary FROM spy_cats`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var cats []models.SpyCat
+	for rows.Next() {
+		var cat models.SpyCat
+		if err := rows.Scan(&cat.ID, &cat.Name, &cat.YearsExperience, &cat.Breed, &cat.Salary); err != nil {
+			return nil, err
+		}
+		cats = append(cats, cat)
+	}
+	return cats, nil
+}
+
+// UpdateSalary modifies an existing SpyCats salary
+func (r *SpyCatRepo) UpdateSalary(ctx context.Context, catID int, newSalary float64) error {
 	query := `
         UPDATE spy_cats
-        SET name = $1, years_experience = $2, breed = $3, salary = $4
-        WHERE id = $5
+        SET salary = $1
+        WHERE id = $2
     `
-	_, err := r.db.ExecContext(ctx, query, cat.Name, cat.YearsExperience, cat.Breed, cat.Salary, cat.ID)
+	_, err := r.db.ExecContext(ctx, query, newSalary, catID)
 	return err
 }
 

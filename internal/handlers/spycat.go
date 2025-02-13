@@ -51,7 +51,16 @@ func (h *SpyCatHandler) GetSpyCat(c *gin.Context) {
 	c.JSON(http.StatusOK, cat)
 }
 
-func (h *SpyCatHandler) UpdateSpyCat(c *gin.Context) {
+func (h *SpyCatHandler) ListSpyCats(c *gin.Context) {
+	cats, err := h.repo.List(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, cats)
+}
+
+func (h *SpyCatHandler) UpdateSpyCatSalary(c *gin.Context) {
 	// Convert path param (id) to int
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -59,29 +68,22 @@ func (h *SpyCatHandler) UpdateSpyCat(c *gin.Context) {
 		return
 	}
 
-	// Bind incoming JSON to a SpyCat struct
-	var cat models.SpyCat
-	if err := c.ShouldBindJSON(&cat); err != nil {
+	// Extract salary field from incoming JSON
+	var s = struct {
+		Salary float64 `json:"salary"`
+	}{}
+	if err := c.ShouldBindJSON(&s); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Make sure the ID in the path matches the one we're updating
-	cat.ID = id
-
-	// (Optional) Validate breed with TheCatAPI here before updating:
-	// if !isValidBreed(cat.Breed) {
-	//     c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cat breed"})
-	//     return
-	// }
-
 	// Call the repository to update the record
-	if err := h.repo.Update(c.Request.Context(), &cat); err != nil {
+	if err := h.repo.UpdateSalary(c.Request.Context(), id, s.Salary); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, cat)
+	c.JSON(http.StatusOK, s)
 }
 
 func (h *SpyCatHandler) DeleteSpyCat(c *gin.Context) {
