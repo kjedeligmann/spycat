@@ -1,9 +1,10 @@
-CREATE TABLE missions (
+-- IF NOT EXISTS ensures idempotent migrations
+CREATE TABLE IF NOT EXISTS missions (
     id SERIAL PRIMARY KEY,
     status TEXT CHECK (status IN ('ongoing', 'completed')) DEFAULT 'ongoing'
 );
 
-CREATE TABLE spy_cats (
+CREATE TABLE IF NOT EXISTS spy_cats (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     years_experience INT CHECK (years_experience >= 0),
