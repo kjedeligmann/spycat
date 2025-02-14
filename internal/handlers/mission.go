@@ -26,6 +26,16 @@ func (h *MissionHandler) CreateMission(c *gin.Context) {
 		return
 	}
 
+	if len(mission.Targets) < 1 || len(mission.Targets) > 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Each mission must have between 1 and 3 targets"})
+		return
+	}
+
+	// Default mission status is ongoing if not provided.
+	if mission.Status == "" {
+		mission.Status = "ongoing"
+	}
+
 	err := h.repo.Create(c.Request.Context(), &mission)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create mission"})
@@ -44,7 +54,7 @@ func (h *MissionHandler) GetMission(c *gin.Context) {
 	}
 
 	mission, err := h.repo.Get(c.Request.Context(), id)
-	if err != nil || mission == nil {
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Mission not found"})
 		return
 	}
@@ -120,4 +130,23 @@ func (h *MissionHandler) DeleteMission(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Mission deleted successfully"})
+}
+
+// Add a new target to a mission
+func (h *MissionHandler) AddTarget(c *gin.Context) {
+	missionID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid mission ID"})
+		return
+	}
+	var target models.Target
+	if err := c.ShouldBindJSON(&target); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.repo.AddTarget(c.Request.Context(), missionID, &target); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, target)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/kjedeligmann/spycat/internal/models"
 )
@@ -24,9 +25,10 @@ func (r *MissionRepo) Create(ctx context.Context, mission *models.Mission) error
 	}
 	defer tx.Rollback()
 
-	// Insert mission
-	query := `INSERT INTO missions (status) VALUES ($1) RETURNING id`
-	err = tx.QueryRowContext(ctx, query, mission.Status).Scan(&mission.ID)
+	var query string
+	query = `INSERT INTO missions (cat_id, status) VALUES ($1, $2) RETURNING id`
+	err = tx.QueryRowContext(ctx, query, &mission.CatID, mission.Status).Scan(&mission.ID)
+
 	if err != nil {
 		return err
 	}
@@ -52,7 +54,9 @@ func (r *MissionRepo) Get(ctx context.Context, id int) (*models.Mission, error) 
         FROM missions
         WHERE id = $1
     `
-	err := r.db.QueryRowContext(ctx, query, id).Scan(&mission.ID, &mission.CatID, &mission.Status)
+	row := r.db.QueryRowContext(ctx, query, id)
+	err := row.Scan(&mission.ID, &mission.CatID, &mission.Status)
+	fmt.Println(mission)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -142,5 +146,43 @@ func (r *MissionRepo) Delete(ctx context.Context, id int) error {
 	if rowsAffected == 0 {
 		return errors.New("mission cannot be deleted")
 	}
+	return nil
+}
+
+// Add a new target to a mission if the mission is not completed and target count is less than 3
+func (r *MissionRepo) AddTarget(ctx context.Context, missionID int, target *models.Target) error {
+	// Check mission status
+	var status string
+	if err := r.db.QueryRowContext(ctx, `SELECT status FROM missions WHERE id = $1`, missionID).Scan(&status); err != nil {
+		return err
+	}
+	if status == "completed" {
+		return errors.New("cannot add target to a completed mission")
+	}
+
+	// Check the number of targets already in the mission
+	var count int
+	if err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM targets WHERE mission_id = $1`, missionID).Scan(&count); err != nil {
+		return err
+	}
+	if count >= 3 {
+		return errors.New("mission already has the maximum number of targets")
+	}
+
+	query := `
+        INSERT INTO targets (mission_id, name, country, notes, completed)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id
+    `
+	if err := r.db.QueryRowContext(ctx, query,
+		missionID,
+		target.Name,
+		target.Country,
+		target.Notes,
+		target.Completed,
+	).Scan(&target.ID); err != nil {
+		return err
+	}
+	target.MissionID = missionID
 	return nil
 }
