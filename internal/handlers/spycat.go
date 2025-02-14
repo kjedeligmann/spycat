@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/kjedeligmann/spycat/internal/models"
 	"github.com/kjedeligmann/spycat/internal/repos"
@@ -25,8 +27,11 @@ func (h *SpyCatHandler) CreateSpyCat(c *gin.Context) {
 		return
 	}
 
-	// (Optional) Validate breed with TheCatAPI here:
-	// if !isValidBreed(cat.Breed) { ... }
+	// Validate breed with TheCatAPI
+	if !isValidBreed(cat.Breed) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid breed"})
+		return
+	}
 
 	err := h.repo.Create(c.Request.Context(), &cat)
 	if err != nil {
@@ -102,4 +107,32 @@ func (h *SpyCatHandler) DeleteSpyCat(c *gin.Context) {
 
 	// Return 204 No Content to indicate successful deletion
 	c.Status(http.StatusNoContent)
+}
+
+// isValidBreed checks if the provided breed exists in the list of breeds from TheCatAPI
+func isValidBreed(breed string) bool {
+	resp, err := http.Get("https://api.thecatapi.com/v1/breeds")
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false
+	}
+
+	var breeds = []struct {
+		Name string `json:"name"`
+	}{}
+	if err := json.NewDecoder(resp.Body).Decode(&breeds); err != nil {
+		return false
+	}
+
+	// Check if the provided breed matches any of the breeds (case-insensitive)
+	for _, b := range breeds {
+		if strings.EqualFold(b.Name, breed) {
+			return true
+		}
+	}
+	return false
 }
