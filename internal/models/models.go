@@ -13,6 +13,8 @@ type Mission struct {
 	ID     int    `json:"id"`
 	CatID  int    `json:"cat_id"`
 	Status string `json:"status"` // e.g., "ongoing" or "completed"
+
+	Targets []Target `json:"targets"`
 }
 
 type Target struct {
