@@ -1,0 +1,366 @@
+{
+	"info": {
+		"_postman_id": "668ab1f4-a0e4-42ee-a0cf-7cb442e8eb18",
+		"name": "Spy Cat Agency API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39272062"
+	},
+	"item": [
+		{
+			"name": "SpyCats",
+			"item": [
+				{
+					"name": "Create SpyCat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Tom\",\n  \"years_experience\": 2,\n  \"breed\": \"Abyssinian\",\n  \"salary\": 1300\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/spy-cats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"spy-cats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List SpyCats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spy-cats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"spy-cats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get SpyCat by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spy-cats/{{spycat_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"spy-cats",
+								"{{spycat_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update SpyCat Salary",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"salary\": 2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/spy-cats/{{spycat_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"spy-cats",
+								"{{spycat_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete SpyCat",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/spy-cats/{{spycat_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"spy-cats",
+								"{{spycat_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Missions",
+			"item": [
+				{
+					"name": "Create Mission",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"targets\": [\n        {\n            \"name\": \"Maddy\",\n            \"country\": \"USA\",\n            \"completed\": false\n        },\n        {\n            \"name\": \"Laura\",\n            \"country\": \"USA\",\n            \"notes\": \"Sent down here from the heavens\",\n            \"completed\": false\n        },\n        {\n            \"name\": \"Doppelganger\",\n            \"country\": \"USA\",\n            \"completed\": false\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/missions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Missions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Mission by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign SpyCat to Mission",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cat_id\": {{spycat_id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Mission Completed",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/completed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"completed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Mission",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Target to Mission",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dale Cooper\",\n    \"country\":\"USA\",\n    \"notes\":\"He's a special agent engaged in the Blue Rose cases.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/newtarget",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"newtarget"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Target Completed",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/{{target_id}}/completed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"{{target_id}}",
+								"completed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Target Notes",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"Target got killed\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/{{target_id}}/notes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"{{target_id}}",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Target",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/missions/{{mission_id}}/{{target_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"missions",
+								"{{mission_id}}",
+								"{{target_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "spycat_id",
+			"value": "1"
+		},
+		{
+			"key": "mission_id",
+			"value": "1"
+		},
+		{
+			"key": "target_id",
+			"value": "1"
+		}
+	]
+}
